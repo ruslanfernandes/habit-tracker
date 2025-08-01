@@ -1,32 +1,41 @@
-import { useSelector } from "react-redux";
-import type { Rootstate } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, Rootstate } from "../store/store";
 import { Box, Button, Grid, Paper, Typography } from "@mui/material";
 import { CheckCircle, Delete } from "@mui/icons-material";
+import { deleteHabit, toggleHabit } from "../store/habit-slice";
 
 const HabitList: React.FC = () => {
   const { habits } = useSelector((state: Rootstate) => state.habits);
+  const dispatch = useDispatch<AppDispatch>();
   const today = new Date().toISOString().split("T")[0];
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 4 }}>
       {habits.map((habit) => {
         return (
           <Paper key={habit.id} elevation={2} sx={{ p: 2 }}>
-            <Grid container alignItems="center">
+            <Grid container alignItems="stretch">
+              {/* Name and Frequency */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Typography variant="h6">{habit.name}</Typography>
                 <Typography
                   variant="body2"
-                  color="text.secondary"
+                  color="textSecondary"
                   sx={{ textTransform: "capitalize" }}
                 >
                   {habit.frequency}
                 </Typography>
               </Grid>
 
+              {/* BUTTONS */}
               <Grid size={{ xs: 12, sm: 6 }}>
                 <Box
-                  sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 1,
+                  }}
                 >
+                  {/* COMPLETE BUTTON */}
                   <Button
                     variant="outlined"
                     color={
@@ -35,6 +44,9 @@ const HabitList: React.FC = () => {
                         : "primary"
                     }
                     startIcon={<CheckCircle />}
+                    onClick={() =>
+                      dispatch(toggleHabit({ id: habit.id, date: today }))
+                    }
                   >
                     {habit.completedDates.includes(today)
                       ? "Completed"
@@ -44,6 +56,7 @@ const HabitList: React.FC = () => {
                     variant="outlined"
                     color="error"
                     startIcon={<Delete />}
+                    onClick={() => dispatch(deleteHabit({ id: habit.id }))}
                   >
                     Remove
                   </Button>
